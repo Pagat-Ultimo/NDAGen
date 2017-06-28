@@ -1,0 +1,62 @@
+﻿<#@ template debug="false" hostspecific="false" language="C#" #>
+<#@ assembly name="System.Core" #>
+<#@ assembly name="System.Runtime" #>
+<#@ assembly name="System.Collections" #>
+<#@ assembly name="$(SolutionDir)\NDAGenLib\bin\Debug\NDAGenLib.dll" #>  
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Runtime" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="System.Collections" #>
+<#@ import namespace="NDAGenLib.Common" #>
+<#@ import namespace="NDAGenLib.Facade" #>
+<#@ import namespace="NDAGenLib.Model" #>
+<#@ output extension=".cs" #>
+using System.Text;
+using System.Threading.Tasks;
+using TiCLSApp.DataAccess;
+using NDAGenLib.Model;
+using System.IO;
+using Newtonsoft.Json.Linq;
+using System.Collections.Generic;
+using Newtonsoft.Json;
+
+namespace <#= NDAGenConfig.ModelNamespace #>
+{
+	class TiclsRESTService : I<#= NDAGenConfig.ServiceName #>Service
+	{
+        RESTAccess ac;
+        public TiclsRESTService()
+        {
+           ac = new RESTAccess("http://10.10.10.127:3000");
+          // ac = new RESTAccess("http://qapp01.mindpack.com/publishoutput");
+        }
+		<#
+		NDAGenerator gen = new NDAGenerator();
+		foreach (DTOSwaggerPath path in gen.ServiceDefinition.Paths)
+		{
+			foreach (DTOSwaggerPathsAction action in path.Actions)
+			{	
+				
+#>
+		<#= gen.GetMethodHead(action, path.Path, true, true) #>
+		{
+			Dictionary<string, string> param = new Dictionary<string, string>();
+			param.Add("api_key", "apiKey");
+			string requestJson = await ac.Request("api/user", "GET", param, AppData.Instance.JWT);
+<#
+			if(gen.GetMethodType(action) != "") {
+#>
+			<#=gen.GetMethodType(action)#> result = JsonConvert.DeserializeObject<<#=gen.GetMethodType(action)#>>(requestJson);
+			return result;
+<#
+			} 
+#>
+		}
+<# 
+			}	        
+		}
+#>  
+		
+	}
+}

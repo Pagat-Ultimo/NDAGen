@@ -1,0 +1,36 @@
+﻿<#@ template debug="false" hostspecific="false" language="C#" #>
+<#@ assembly name="System.Core" #>
+<#@ assembly name="System.Runtime" #>
+<#@ assembly name="System.Collections" #>
+<#@ assembly name="$(SolutionDir)\NDAGenLib\bin\Debug\NDAGenLib.dll" #>  
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Runtime" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="System.Collections" #>
+<#@ import namespace="NDAGenLib.Common" #>
+<#@ import namespace="NDAGenLib.Facade" #>
+<#@ import namespace="NDAGenLib.Model" #>
+<#@ output extension=".cs" #>
+namespace <#= NDAGenConfig.ModelNamespace #>
+{
+<#
+	NDAGenerator gen = new NDAGenerator();
+	foreach (DTODef def in gen.ServiceDefinition.ModelDefinitions)
+	{
+#>
+    public class <#= def.ModelName #>
+    {
+<#
+		foreach (DTODefProps prop in def.ModelProps)
+		{
+#>
+        public <#= gen.JsonTypeToNetType(prop.Type) #> <#= prop.Name #> { get; set; }
+<#
+		}
+#>
+	} 
+<#
+	}
+#>
+}
