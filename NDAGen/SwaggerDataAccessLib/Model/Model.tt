@@ -1,0 +1,27 @@
+﻿<#@ template debug="false" hostspecific="false" language="C#" #>
+<#@ include file="$(SolutionDir)\SwaggerDataAccessLib\T4config.txt" #>
+<#@ output extension=".cs" #> 
+using System.Collections.Generic;
+
+namespace <#= ModelNamespace #>    
+{    
+<#  
+	
+	foreach (DTODef def in gen.ServiceDefinition.ModelDefinitions)
+	{
+#>
+    public class <#= def.ModelName #>
+    {
+<#
+		foreach (DTODefProps prop in def.ModelProps)
+		{
+#>
+        public <#= gen.JsonTypeToNetType(prop.Type, prop.ReferenceType) #> <#= prop.Name #> { get; set; }
+<#
+		}
+#>
+	} 
+<#
+	}
+#>
+}

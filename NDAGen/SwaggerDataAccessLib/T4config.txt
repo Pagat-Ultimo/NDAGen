@@ -1,0 +1,21 @@
+﻿<#@ assembly name="System.Core" #>
+<#@ assembly name="System.Runtime" #>
+<#@ assembly name="System.Collections" #>
+<#@ assembly name="C:\Users\chris\Source\Repos\NDAGen\NDAGen\NDAGenLib.Common\bin\Debug\netstandard1.4\NDAGenLib.Common.dll" #>
+<#@ assembly name="C:\Users\chris\Source\Repos\NDAGen\NDAGen\NDAGenLib\bin\Debug\netstandard1.4\NDAGenLib.dll" #>
+<#@ assembly name="$(SolutionDir)\SwaggerDataAccessLib\bin\Debug\Newtonsoft.Json.dll" #>
+
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="System.Collections" #>
+<#@ import namespace="NDAGenLib.Facade" #>
+<#@ import namespace="NDAGenLib.Common" #>
+<#
+	string ModelNamespace = "PetStore.Model";
+	string ServiceNamespace = "PetStore.Facade";
+	string ServiceName = "PetStore";
+	NDAConfig.ConnectionString = "http://petstore.swagger.io";
+	NDAConfig.Path = "v2/swagger.json";
+	NDAGenerator gen = new NDAGenerator();
+#>

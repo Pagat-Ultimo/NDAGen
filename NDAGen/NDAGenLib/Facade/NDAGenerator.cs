@@ -1,4 +1,4 @@
-﻿using NDAGenLib.Model;
+﻿using NDAGenLib.Common;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -19,13 +19,14 @@ namespace NDAGenLib.Facade
 
         async Task MainAsync()
         {
-            ServiceDefinition = await TiclsServiceSystem.GetService().RegistrationRegister();
+            string Definition = await NDAServiceSystem.GetService().RetrieveDefinition();
+            ServiceDefinition = NDAServiceSystem.GetParser().ParseDefinition(Definition); 
 
         }
 
         public List<DTODefProps> GetProperties()
         {
-           
+
             return ServiceDefinition.ModelDefinitions.First().ModelProps;
         }
         public string GetMethodNameFromPath(string path)
@@ -36,7 +37,7 @@ namespace NDAGenLib.Facade
             path = path.Replace("}", "");
             return path;
         }
-        public string GetMethodTypeFromSchema(DTOSwaggerPathsRespinseSchemaItem reference)
+        public string GetMethodTypeFromSchema(DTOMethodPathsRespinseSchemaItem reference)
         {
             var ActualType = "";
             if (reference.TypeRef != null)
@@ -56,8 +57,10 @@ namespace NDAGenLib.Facade
 
         }
 
-        public string JsonTypeToNetType(string type)
+        public string JsonTypeToNetType(string type, string refType = "")
         {
+            if (refType == null)
+                refType = "";
             switch (type)
             {
                 case "number":
@@ -68,12 +71,20 @@ namespace NDAGenLib.Facade
                     return "bool";
                 case "object":
                     return "dynamic";
+                case "timestamp":
+                    return "DateTime";
+                case "array":
+                    return "List<" + GetMethodTypeFromRef(refType) + ">";
+                case "file":
+                    return "string";
+                case null:
+                    return GetMethodTypeFromRef(refType);
                 default:
                     return type;
             }
         }
 
-        public string GetParamList(List<DTOSwaggerPathsParameter> param)
+        public string GetParamList(List<DTOMethodPathsParameter> param)
         {
             string ParamList = "";
             if (param == null)
@@ -85,64 +96,69 @@ namespace NDAGenLib.Facade
                 var Schema = item.Schema;
                 if (Schema == null)
                 {
-                    ParamList += JsonTypeToNetType(item.Type);
+                    ParamList += JsonTypeToNetType(item.Type, (item.Items == null ? "" : item.Items.Type));
                 }
                 else
                 {
                     if (Schema.Items == null)
                     {
-                        if(Schema.TypeRef != null)
-                           ParamList += GetMethodTypeFromRef(Schema.TypeRef);
+                        if (Schema.TypeRef != null)
+                            ParamList += GetMethodTypeFromRef(Schema.TypeRef);
                         else
-                           ParamList += JsonTypeToNetType(Schema.Type);
+                            ParamList += JsonTypeToNetType(Schema.Type);
                     }
                     else
                     {
                         ParamList += "List<" + GetMethodTypeFromSchema(Schema.Items) + ">";
                     }
                 }
-               
+
                 ParamList += " " + item.Name;
             }
             return ParamList;
         }
 
-        public string GetMethodHead(DTOSwaggerPathsAction action, string path, bool isPublic, bool isAsync = false)
+        public string GetMethodHead(DTOMethodPathsAction action, string path, string preClause = "")
         {
-            string Head = "";
-            if (isPublic)
-                Head += "public ";
-            if (isAsync)
-                Head += "async ";
-            Head += "Task";
-            var resp = action.Responses.First();
-            if (resp != null)
+            try
             {
-                var Schema = resp.Schema;
-                if (Schema == null)
+                string Head = "";
+                Head += preClause;
+                Head += "Task";
+                var resp = action.Responses.First();
+                if (resp != null)
                 {
-                    Head += " " + GetMethodNameFromPath(path) + action.ActionName;
-                }
-                else
-                {
-                    if (Schema.Items == null)
+                    var Schema = resp.Schema;
+                    if (Schema == null)
                     {
-                        Head += "<" + GetMethodTypeFromRef(Schema.TypeRef) + "> " + GetMethodNameFromPath(path) + action.ActionName;
+                        Head += " " + GetMethodNameFromPath(path) + action.ActionName;
                     }
                     else
                     {
-                        Head += "<List<" + GetMethodTypeFromSchema(Schema.Items) + ">> " + GetMethodNameFromPath(path) + action.ActionName;
+                        if (Schema.Items == null)
+                        {
+                            Head += "<" + GetMethodTypeFromRef(Schema.TypeRef) + "> " + GetMethodNameFromPath(path) + action.ActionName;
+                        }
+                        else
+                        {
+                            Head += "<List<" + GetMethodTypeFromSchema(Schema.Items) + ">> " + GetMethodNameFromPath(path) + action.ActionName;
+                        }
                     }
                 }
+                Head += "(";
+                Head += GetParamList(action.Parameters);
+                Head += ")";
+                return Head;
             }
-            Head += "(";
-            Head += GetParamList(action.Parameters);
-            Head += ")";
-            return Head;
-            
+            catch (Exception)
+            {
+                return "";
+            }
+
+
         }
 
-        public string GetMethodType(DTOSwaggerPathsAction action)
+        public string GetMethodType(DTOMethodPathsAction action)
         {
             var resp = action.Responses.First();
             if (resp != null)
@@ -167,19 +183,19 @@ namespace NDAGenLib.Facade
             return "";
         }
 
-        public string GetPath(DTOSwaggerPath path)
+        public string GetPath(DTOMethodPath path)
         {
             var Path = "\"";
             Path += path.Path.Replace("#", "");
             Path = Path.Replace("{", "\" + ");
             Path = Path.Replace("}", " + \"");
-            if (Path[Path.Length-2] == '\"')
-                Path.Remove(Path.Length - 4,4);
+            if (Path[Path.Length - 2] == '\"')
+                Path.Remove(Path.Length - 4, 4);
             else
-                Path+="\"";
+                Path += "\"";
             return Path;
         }
-        public string GetBodyParamName(List<DTOSwaggerPathsParameter> param)
+        public string GetBodyParamName(List<DTOMethodPathsParameter> param)
         {
             if (param == null)
                 return "";
@@ -189,7 +205,7 @@ namespace NDAGenLib.Facade
             else
                 return "";
         }
-        public string GetBodyParamType(List<DTOSwaggerPathsParameter> param)
+        public string GetBodyParamType(List<DTOMethodPathsParameter> param)
         {
             string ParamList = "";
             if (param == null)
@@ -224,13 +240,25 @@ namespace NDAGenLib.Facade
             }
             return ParamList;
         }
-        public string GetBodyParamSerialization(List<DTOSwaggerPathsParameter> param)
+        public string GetBodyParamSerialization(List<DTOMethodPathsParameter> param)
         {
             string BodyParamName = GetBodyParamName(param);
             if (BodyParamName == "")
                 return "null";
             else
                 return "JsonConvert.SerializeObject(" + BodyParamName + ")";
+        }
+
+        public string GetQueryParamKeyValueString(DTOMethodPathsParameter param)
+        {
+            string result = "";
+            if (param == null)
+                return "";
+            if (param.In == "query")
+            {
+                return "\"" + param.Name + "\"," + param.Name;
+            }
+            else return "";
         }
     }
 }

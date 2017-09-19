@@ -1,0 +1,27 @@
+﻿<#@ template debug="false" hostspecific="false" language="C#" #>
+<#@ include file="$(SolutionDir)\SwaggerDataAccessLib\T4config.txt" #>
+<#@ output extension=".cs" #>
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using <#= ModelNamespace #>;    
+
+namespace <#= ServiceNamespace #>    
+{
+    public interface I<#= ServiceName #>Service
+    {
+		string Token { get; set; }
+<# 
+		foreach (DTOMethodPath path in gen.ServiceDefinition.Paths)
+		{
+			foreach (DTOMethodPathsAction action in path.Actions)
+			{	
+				string head = gen.GetMethodHead(action, path.Path);
+#>
+		<#= head #><# if(head != "") {#>;<#}#>
+
+<# 
+			}	        
+		}
+#>  
+    }
+}

@@ -1,0 +1,70 @@
+﻿<#@ template debug="false" hostspecific="false" language="C#" #>
+<#@ include file="$(SolutionDir)\SwaggerDataAccessLib\T4config.txt" #>
+<#@ output extension=".cs" #>
+using System.Text;
+using System.Threading.Tasks;
+using System.IO; 
+using Newtonsoft.Json.Linq; 
+using System.Collections.Generic; 
+using Newtonsoft.Json; 
+using SwaggerDataAccessLib.DataAccess;
+using <#= ModelNamespace #>;
+ 
+namespace <#= ServiceNamespace #>
+{
+	public partial class <#= ServiceName #>Service : I<#= ServiceName #>Service
+	{
+        protected IRestAccess ac;   
+		public string Token { get; set; } = "";
+        public <#= ServiceName #>Service(IRestAccess access)
+        {
+		   ac = access;
+		   ac.ConnectionString = "http://petstore.swagger.io/#/"; 
+        }
+		<#  
+		
+		foreach (DTOMethodPath path in gen.ServiceDefinition.Paths)
+		{
+			foreach (DTOMethodPathsAction action in path.Actions)
+			{	
+				string head = gen.GetMethodHead(action, path.Path, "public virtual async ");
+				if(head != "") {
+#>
+		<#=head#>
+		{
+			Dictionary<string, string> param = new Dictionary<string, string>();
+<#
+            if(action.Parameters != null) 
+			{
+			foreach (var item in action.Parameters)
+			{
+			  string valuekey = gen.GetQueryParamKeyValueString(item);
+			  if(valuekey != "")
+			  {
+#>
+		    param.Add(<#=valuekey #>.ToString());
+<#
+			} 
+			}
+			}
+#>
+			//param.Add("api_key", "apiKey");
+			string requestJson = await ac.Request(<#= gen.GetPath(path) #>, "<#= action.ActionName.ToUpper() #>", param, Token, <#= gen.GetBodyParamSerialization(action.Parameters) #> );
+<#
+			if(gen.GetMethodType(action) != "") {
+#>
+			<#=gen.GetMethodType(action)#> result = JsonConvert.DeserializeObject<<#=gen.GetMethodType(action)#>>(requestJson);
+			return result;
+<#
+			} 
+			
+#>
+		}
+<# 
+			}	 
+			}
+		}
+#>  
+		
+	}
+}
