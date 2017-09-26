@@ -7,11 +7,15 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NDAGenLib", "NDAGenLib\NDAG
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SwaggerDataAccessLib", "SwaggerDataAccessLib\SwaggerDataAccessLib.csproj", "{67F9D3A8-F71E-4428-913F-C37AE82CDB24}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NDAGenTestApp", "NDAGenTestApp\NDAGenTestApp.csproj", "{E7E15A7B-5A26-44AB-9147-163600E284B8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NDAGenTestApp", "NDAGenTestApp\NDAGenTestApp.csproj", "{E7E15A7B-5A26-44AB-9147-163600E284B8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NDAGenLib.Swagger", "NDAGenLib.Swagger\NDAGenLib.Swagger.csproj", "{3FAD466D-0CD6-4596-83DD-CDE1F4777D54}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NDAGenLib.Swagger", "NDAGenLib.Swagger\NDAGenLib.Swagger.csproj", "{3FAD466D-0CD6-4596-83DD-CDE1F4777D54}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NDAGenLib.Common", "NDAGenLib.Common\NDAGenLib.Common.csproj", "{284074EB-B6EF-4524-AB28-64CB1885FB53}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NDAGenLib.Common", "NDAGenLib.Common\NDAGenLib.Common.csproj", "{284074EB-B6EF-4524-AB28-64CB1885FB53}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NDAGenLib.RemoteServer", "NDAGenLib.RemoteServer\NDAGenLib.RemoteServer.csproj", "{E0708F3F-E09A-421B-8CD1-6E485C201261}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RemoteServerDataAccessLib", "RemoteServerDataAccessLib\RemoteServerDataAccessLib.csproj", "{A9EC7E8A-B488-490A-B6BC-AE627813E0C3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +43,14 @@ Global
 		{284074EB-B6EF-4524-AB28-64CB1885FB53}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{284074EB-B6EF-4524-AB28-64CB1885FB53}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{284074EB-B6EF-4524-AB28-64CB1885FB53}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E0708F3F-E09A-421B-8CD1-6E485C201261}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E0708F3F-E09A-421B-8CD1-6E485C201261}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E0708F3F-E09A-421B-8CD1-6E485C201261}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E0708F3F-E09A-421B-8CD1-6E485C201261}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A9EC7E8A-B488-490A-B6BC-AE627813E0C3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A9EC7E8A-B488-490A-B6BC-AE627813E0C3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A9EC7E8A-B488-490A-B6BC-AE627813E0C3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A9EC7E8A-B488-490A-B6BC-AE627813E0C3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

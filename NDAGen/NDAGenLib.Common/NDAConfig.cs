@@ -9,5 +9,6 @@ namespace NDAGenLib.Common
         public static string ConnectionString { get; set; }
         public static string Path { get; set; }
         public static string Type { get; set; }
+        public static string PropertyPrefix { get; set; } = "";
     }
 }

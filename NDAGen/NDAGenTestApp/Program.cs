@@ -9,9 +9,9 @@ namespace NDAGenTestApp
         static void Main(string[] args)
         {
             Console.WriteLine("Hello World!");
-            string ModelNamespace = "Ticls.Model";
-            string ServiceNamespace = "Ticls.Facade";
-            string ServiceName = "Ticls";
+            string ModelNamespace = "PetStore.Model";
+            string ServiceNamespace = "PetStore.Facade";
+            string ServiceName = "PetStore";
             NDAConfig.ConnectionString = "http://petstore.swagger.io";
             NDAConfig.Path = "v2/swagger.json";
             NDAGenerator gen = new NDAGenerator();

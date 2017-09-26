@@ -21,7 +21,6 @@ namespace NDAGenLib.Facade
         {
             string Definition = await NDAServiceSystem.GetService().RetrieveDefinition();
             ServiceDefinition = NDAServiceSystem.GetParser().ParseDefinition(Definition); 
-
         }
 
         public List<DTODefProps> GetProperties()

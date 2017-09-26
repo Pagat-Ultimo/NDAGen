@@ -9,12 +9,14 @@ namespace NDAGenLib.Common
     public class DTODef
     {
         public string ModelName { get; set; }
+        public string ProtocollName { get; set; }
         public List<DTODefProps> ModelProps { get; set; }
     }
 
     public class DTODefProps
     {
         public string Name { get; set; }
+        public string ProtocollName { get; set; }
         public string Type { get; set; }
         public string ReferenceType { get; set; }
     }
